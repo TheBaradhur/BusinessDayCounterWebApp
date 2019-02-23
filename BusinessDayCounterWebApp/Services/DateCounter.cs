@@ -1,16 +1,26 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace BusinessDayCounterWebApp.Services
 {
     public class DateCounter : IDateCounter
-    {   
-        private DayOfWeek firstDayOfWeek = DayOfWeek.Monday;
-        private DayOfWeek lastDayOfWeek = DayOfWeek.Friday;
-
+    {
         public int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate, IList<DateTime> publicHolidays)
         {
-            throw new NotImplementedException();
+            var businessDays = WeekdaysBetweenTwoDates(firstDate, secondDate);
+
+            if (businessDays == 0)
+                return businessDays;
+
+            foreach (var publicHoliday in publicHolidays)
+            {
+                if (publicHoliday > firstDate && publicHoliday < secondDate)
+                {
+                    businessDays--;
+                }
+            }
+
+            return businessDays;
         }
 
         public int WeekdaysBetweenTwoDates(DateTime firstDate, DateTime secondDate)
@@ -40,7 +50,7 @@ namespace BusinessDayCounterWebApp.Services
             }
 
             // Remaining days are within a week, but ends on weekend
-            // Or stepping over the weekend
+            // Or they are stepping over the weekend
             if (remaingDays <= daysToWeekend + 2)
             {
                 remaingDays = daysToWeekend;
