@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace BusinessDayCounterWebApp.Helpers
+namespace BusinessDayCounterWebApp.Services.PublicHolidayCalculators
 {
-    public class PublicHolidayCalculator : IPublicHolidayCalculator
+    public class FixedPublicHolidayCalculator : IPublicHolidayCalculator
     {
         public List<DateTime> GetPublicHolidayByYears(List<int> years, PublicHoliday holiday)
         {
@@ -27,20 +27,6 @@ namespace BusinessDayCounterWebApp.Helpers
             }
 
             return publicHolidaysList;
-        }
-
-        public List<int> GetYearsBetweenDates(DateTime firstDate, DateTime secondDate)
-        {
-            var yearsList = new List<int>();
-            var iterator = new DateTime(firstDate.Year, firstDate.Month, firstDate.Day);
-
-            while (iterator.Year <= secondDate.Year)
-            {
-                yearsList.Add(iterator.Year);
-                iterator = iterator.AddYears(1);
-            }
-
-            return yearsList;
-        }
+        }        
     }
 }

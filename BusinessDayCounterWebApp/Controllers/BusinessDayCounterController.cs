@@ -3,6 +3,7 @@ using BusinessDayCounterWebApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace BusinessDayCounterWebApp.Controllers
 {
@@ -26,7 +27,14 @@ namespace BusinessDayCounterWebApp.Controllers
         [HttpGet("custom-holidays")]
         public ActionResult<int> BusinessDaysBetweenTwoDatesCustomHolidays(DateTime firstDate, DateTime secondDate, List<PublicHoliday> publicHolidays)
         {
-            return _businessDayCounter.BusinessDaysBetweenTwoDatesCustomHolidays(firstDate, secondDate, publicHolidays);
+            var result =  _businessDayCounter.BusinessDaysBetweenTwoDatesCustomHolidays(firstDate, secondDate, publicHolidays);
+
+            if (result == -1)
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
         }
     }
 }

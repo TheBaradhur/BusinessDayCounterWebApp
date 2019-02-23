@@ -1,6 +1,7 @@
 using BusinessDayCounterWebApp.Helpers;
 using BusinessDayCounterWebApp.Models;
 using BusinessDayCounterWebApp.Services;
+using BusinessDayCounterWebApp.Services.PublicHolidayCalculators;
 using FluentAssertions;
 using NSubstitute;
 using System;
@@ -33,11 +34,14 @@ namespace BusinessDayCounterWebApp.UnitsTests
             new object[] { new DateTime(2013, 10, 7), new DateTime(2014, 1, 1), HolidaysList, 59 },
         };
 
-        private readonly IPublicHolidayCalculator _publicHolidayCalculator;
+        private readonly IPublicHolidayCalculatorFactory _publicHolidayCalculatorFactory;
+
+        private readonly IDateHelper _dateHelper;
 
         public DateCounterTests()
         {
-            _publicHolidayCalculator = Substitute.For<IPublicHolidayCalculator>();
+            _publicHolidayCalculatorFactory = Substitute.For<IPublicHolidayCalculatorFactory>();
+            _dateHelper = Substitute.For<IDateHelper>();
         }
 
         [Theory]
@@ -45,7 +49,7 @@ namespace BusinessDayCounterWebApp.UnitsTests
         public void WeekdaysBetweenTwoDates_WhenPasseValidDates_ThenReturnsCorrectCount(DateTime firstDate, DateTime secondDate, int expectedCounts)
         {
             // Arrange
-            var target = new DateCounter(_publicHolidayCalculator);
+            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper);
 
             // Act
             var actual = target.WeekdaysBetweenTwoDates(firstDate, secondDate);
@@ -63,7 +67,7 @@ namespace BusinessDayCounterWebApp.UnitsTests
             int expectedCounts)
         {
             // Arrange
-            var target = new DateCounter(_publicHolidayCalculator);
+            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper);
 
             // Act
             var actual = target.BusinessDaysBetweenTwoDates(firstDate, secondDate, holidaysList);
@@ -82,17 +86,20 @@ namespace BusinessDayCounterWebApp.UnitsTests
             var holidayList = new List<PublicHoliday> { anzacDayHoliday };
             var anzacDayDateIn2020 = new List<DateTime> { new DateTime(2020, 4, 27) };
             var year = new List<int> { 2020 };
+            var calculator = new FixedPublicHolidayCalculator();
 
-            _publicHolidayCalculator.GetYearsBetweenDates(firstDate, secondDate).Returns(year);
-            _publicHolidayCalculator.GetPublicHolidayByYears(year, anzacDayHoliday).Returns(anzacDayDateIn2020);
+            _dateHelper.GetYearsBetweenDates(firstDate, secondDate).Returns(year);
+            _publicHolidayCalculatorFactory.GetCalculator(anzacDayHoliday).Returns(calculator);
 
-            var target = new DateCounter(_publicHolidayCalculator);
+            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper);
 
             // Act
             var actual = target.BusinessDaysBetweenTwoDatesCustomHolidays(firstDate, secondDate, holidayList);
 
             // Assert
             actual.Should().Be(6);
+            _dateHelper.Received(1).GetYearsBetweenDates(firstDate, secondDate);
+            _publicHolidayCalculatorFactory.Received(1).GetCalculator(anzacDayHoliday);
         }
     }
 }

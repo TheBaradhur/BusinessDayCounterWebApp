@@ -1,18 +1,20 @@
 using BusinessDayCounterWebApp.Helpers;
 using BusinessDayCounterWebApp.Models;
+using BusinessDayCounterWebApp.Services.PublicHolidayCalculators;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BusinessDayCounterWebApp.Services
 {
     public class DateCounter : IDateCounter
     {
-        private readonly IPublicHolidayCalculator _publicHolidayCalculator;
+        private readonly IPublicHolidayCalculatorFactory _publicHolidayCalculatorFactory;
+        private readonly IDateHelper _dateHelper;
 
-        public DateCounter(IPublicHolidayCalculator publicHolidayCalculator)
+        public DateCounter(IPublicHolidayCalculatorFactory publicHolidayCalculatorFactory, IDateHelper dateHelper)
         {
-            _publicHolidayCalculator = publicHolidayCalculator;
+            _publicHolidayCalculatorFactory = publicHolidayCalculatorFactory;
+            _dateHelper = dateHelper;
         }
 
         public int BusinessDaysBetweenTwoDatesCustomHolidays(DateTime firstDate, DateTime secondDate, IList<PublicHoliday> publicHolidays)
@@ -22,9 +24,24 @@ namespace BusinessDayCounterWebApp.Services
                 return 0;
             }
 
-            List<int> yearsToCompare = _publicHolidayCalculator.GetYearsBetweenDates(firstDate, secondDate);
-            var convertedHolidaysList = publicHolidays.SelectMany(x => _publicHolidayCalculator.GetPublicHolidayByYears(yearsToCompare, x)).ToList();
+            List<int> yearsToCompare = _dateHelper.GetYearsBetweenDates(firstDate, secondDate);
 
+            IPublicHolidayCalculator calculator = null;
+            var convertedHolidaysList = new List<DateTime>();
+            try
+            {
+                foreach (var holiday in publicHolidays)
+                {
+                    calculator = _publicHolidayCalculatorFactory.GetCalculator(holiday);
+                    convertedHolidaysList.AddRange(calculator.GetPublicHolidayByYears(yearsToCompare, holiday));
+                }
+            }
+            catch (Exception e)
+            {
+                // Add Logger
+                return -1;
+            }
+            
             return BusinessDaysBetweenTwoDates(firstDate, secondDate, convertedHolidaysList);
         }
 
