@@ -17,7 +17,7 @@ namespace BusinessDayCounterWebApp.Services.PublicHolidayCalculators
             foreach (var year in years)
             {
                 var publicHolidayDate = new DateTime(year, holiday.Month, holiday.Day);
-                if (holiday.HappensOnWeekDay && publicHolidayDate.DayOfWeek > DayOfWeek.Friday)
+                if (holiday.MustHappenOnAWeekDay && publicHolidayDate.DayOfWeek > DayOfWeek.Friday)
                 {
                     var daysToAdd = publicHolidayDate.DayOfWeek == DayOfWeek.Saturday ? 2 : 1;
                     publicHolidayDate = publicHolidayDate.AddDays(daysToAdd);

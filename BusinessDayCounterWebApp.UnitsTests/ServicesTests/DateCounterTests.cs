@@ -82,7 +82,7 @@ namespace BusinessDayCounterWebApp.UnitsTests
             // Arrange
             var firstDate = new DateTime(2020, 4, 20);
             var secondDate = new DateTime(2020, 4, 30);
-            var anzacDayHoliday = new PublicHoliday { Name = "Anzac Day", Month = 4, Day = 25, HappensOnWeekDay = true };
+            var anzacDayHoliday = new PublicHoliday { Name = "Anzac Day", Month = 4, Day = 25, MustHappenOnAWeekDay = true };
             var holidayList = new List<PublicHoliday> { anzacDayHoliday };
             var anzacDayDateIn2020 = new List<DateTime> { new DateTime(2020, 4, 27) };
             var year = new List<int> { 2020 };
@@ -94,7 +94,7 @@ namespace BusinessDayCounterWebApp.UnitsTests
             var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper);
 
             // Act
-            var actual = target.BusinessDaysBetweenTwoDatesCustomHolidays(firstDate, secondDate, holidayList);
+            var actual = target.BusinessDaysBetweenTwoDates(firstDate, secondDate, holidayList);
 
             // Assert
             actual.Should().Be(6);

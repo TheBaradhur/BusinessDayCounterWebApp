@@ -17,7 +17,7 @@ namespace BusinessDayCounterWebApp.Services
             _dateHelper = dateHelper;
         }
 
-        public int BusinessDaysBetweenTwoDatesCustomHolidays(DateTime firstDate, DateTime secondDate, IList<PublicHoliday> publicHolidays)
+        public int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate, IList<PublicHoliday> publicHolidays)
         {            
             if (firstDate > secondDate)
             {

@@ -15,13 +15,16 @@ namespace BusinessDayCounterWebApp.Services
                 case PublicHolidayType.FixedDate:
                     calculator = new FixedPublicHolidayCalculator();
                     break;
-                case PublicHolidayType.BasedOnAnotherDate:
+                case PublicHolidayType.BasedOnAnotherHoliday:
                     throw new NotImplementedException();
                     break;
                 case PublicHolidayType.RepeatEveryXYear:
                     throw new NotImplementedException();
                     break;
                 case PublicHolidayType.Easter:
+                    throw new NotImplementedException();
+                    break;
+                case PublicHolidayType.SpecificDayInWeek:
                     throw new NotImplementedException();
                     break;
                 default:

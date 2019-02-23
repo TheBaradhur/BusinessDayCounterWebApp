@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace BusinessDayCounterWebApp.UnitTests.HelpersTests
+namespace BusinessDayCounterWebApp.UnitTests.ServicesTests.PublicHolidayCalculatorsTests
 {
     public class FixedPublicHolidayCalculatorTests
     {
@@ -26,7 +26,7 @@ namespace BusinessDayCounterWebApp.UnitTests.HelpersTests
             
             // Anzac day falls on saturday in 2020
             new object[] { new List<int> { 2020 }, 
-                new PublicHoliday { Name = "Anzac Day", Month = 4, Day = 25, HappensOnWeekDay = true },
+                new PublicHoliday { Name = "Anzac Day", Month = 4, Day = 25, MustHappenOnAWeekDay = true },
                 new List<DateTime> { new DateTime(2020, 4, 27) } },
         };
         

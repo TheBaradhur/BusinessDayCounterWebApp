@@ -27,7 +27,7 @@ namespace BusinessDayCounterWebApp.Controllers
         [HttpGet("custom-holidays")]
         public ActionResult<int> BusinessDaysBetweenTwoDatesCustomHolidays(DateTime firstDate, DateTime secondDate, List<PublicHoliday> publicHolidays)
         {
-            var result =  _businessDayCounter.BusinessDaysBetweenTwoDatesCustomHolidays(firstDate, secondDate, publicHolidays);
+            var result =  _businessDayCounter.BusinessDaysBetweenTwoDates(firstDate, secondDate, publicHolidays);
 
             if (result == -1)
             {
