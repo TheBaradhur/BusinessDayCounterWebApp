@@ -1,4 +1,5 @@
-﻿using BusinessDayCounterWebApp.Services;
+﻿using BusinessDayCounterWebApp.Helpers;
+using BusinessDayCounterWebApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,8 @@ namespace BusinessDayCounterWebApp
 
             // App services injection
             services
-                .AddSingleton<IDateCounter, DateCounter>();
+                .AddSingleton<IDateCounter, DateCounter>()
+                .AddSingleton<IPublicHolidayCalculator, PublicHolidayCalculator>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

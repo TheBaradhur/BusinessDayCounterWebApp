@@ -1,6 +1,8 @@
+using BusinessDayCounterWebApp.Helpers;
 using BusinessDayCounterWebApp.Models;
 using BusinessDayCounterWebApp.Services;
 using FluentAssertions;
+using NSubstitute;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -31,26 +33,19 @@ namespace BusinessDayCounterWebApp.UnitsTests
             new object[] { new DateTime(2013, 10, 7), new DateTime(2014, 1, 1), HolidaysList, 59 },
         };
 
-        public static IList<PublicHoliday> SimpleCustomHolidaysList = new List<PublicHoliday>
-        {
-            new PublicHoliday { Name = "Christmas", Month = 12, Day = 25 },
-            new PublicHoliday { Name = "Boxing Day", Month = 12, Day = 26 },
-            new PublicHoliday { Name = "New Year", Month = 1, Day = 1 },
-        };
+        private readonly IPublicHolidayCalculator _publicHolidayCalculator;
 
-        public static IEnumerable<object[]> BusinessDaysDatesCustomHolidays => new[]
+        public DateCounterTests()
         {
-            new object[] { new DateTime(2013, 10, 7), new DateTime(2013, 10, 9), SimpleCustomHolidaysList, 1 },
-            new object[] { new DateTime(2013, 12, 24), new DateTime(2013, 12, 27), SimpleCustomHolidaysList, 0 },
-            new object[] { new DateTime(2013, 10, 7), new DateTime(2014, 1, 1), SimpleCustomHolidaysList, 59 },
-        };
+            _publicHolidayCalculator = Substitute.For<IPublicHolidayCalculator>();
+        }
 
         [Theory]
         [MemberData(nameof(WeekDaysDates))]
         public void WeekdaysBetweenTwoDates_WhenPasseValidDates_ThenReturnsCorrectCount(DateTime firstDate, DateTime secondDate, int expectedCounts)
         {
             // Arrange
-            var target = new DateCounter();
+            var target = new DateCounter(_publicHolidayCalculator);
 
             // Act
             var actual = target.WeekdaysBetweenTwoDates(firstDate, secondDate);
@@ -61,10 +56,14 @@ namespace BusinessDayCounterWebApp.UnitsTests
 
         [Theory]
         [MemberData(nameof(BusinessDaysDates))]
-        public void BusinessDaysBetweenTwoDates_WhenPasseValidDates_ThenReturnsCorrectCount(DateTime firstDate, DateTime secondDate, IList<DateTime> holidaysList, int expectedCounts)
+        public void BusinessDaysBetweenTwoDates_WhenPasseValidDates_ThenReturnsCorrectCount(
+            DateTime firstDate,
+            DateTime secondDate,
+            IList<DateTime> holidaysList,
+            int expectedCounts)
         {
             // Arrange
-            var target = new DateCounter();
+            var target = new DateCounter(_publicHolidayCalculator);
 
             // Act
             var actual = target.BusinessDaysBetweenTwoDates(firstDate, secondDate, holidaysList);
@@ -73,18 +72,27 @@ namespace BusinessDayCounterWebApp.UnitsTests
             actual.Should().Be(expectedCounts);
         }
 
-        [Theory]
-        [MemberData(nameof(BusinessDaysDatesCustomHolidays))]
-        public void BusinessDaysBetweenTwoDatesCustomHolidays_WhenPasseValidDatesAndCustomHolidays_ThenReturnsCorrectCount(DateTime firstDate, DateTime secondDate, IList<PublicHoliday> holidaysList, int expectedCounts)
+        [Fact]
+        public void BusinessDaysBetweenTwoDatesCustomHolidays_WhenPasseValidDatesAndCustomHoliday_ThenReturnsCorrectCount()
         {
             // Arrange
-            var target = new DateCounter();
+            var firstDate = new DateTime(2020, 4, 20);
+            var secondDate = new DateTime(2020, 4, 30);
+            var anzacDayHoliday = new PublicHoliday { Name = "Anzac Day", Month = 4, Day = 25, HappensOnWeekDay = true };
+            var holidayList = new List<PublicHoliday> { anzacDayHoliday };
+            var anzacDayDateIn2020 = new List<DateTime> { new DateTime(2020, 4, 27) };
+            var year = new List<int> { 2020 };
+
+            _publicHolidayCalculator.GetYearsBetweenDates(firstDate, secondDate).Returns(year);
+            _publicHolidayCalculator.GetPublicHolidayByYears(year, anzacDayHoliday).Returns(anzacDayDateIn2020);
+
+            var target = new DateCounter(_publicHolidayCalculator);
 
             // Act
-            var actual = target.BusinessDaysBetweenTwoDatesCustomHolidays(firstDate, secondDate, holidaysList);
+            var actual = target.BusinessDaysBetweenTwoDatesCustomHolidays(firstDate, secondDate, holidayList);
 
             // Assert
-            actual.Should().Be(expectedCounts);
+            actual.Should().Be(6);
         }
     }
 }

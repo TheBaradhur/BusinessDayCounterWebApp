@@ -11,20 +11,6 @@ namespace BusinessDayCounterWebApp.Models
 
         public int Day { get; set; }
 
-        public List<DateTime> GetDates(List<int> years)
-        {
-            var publicHolidaysList = new List<DateTime>();
-            if (years == null)
-            {
-                return publicHolidaysList;
-            }
-
-            foreach (var year in years)
-            {
-                publicHolidaysList.Add(new DateTime(year, Month, Day));
-            }
-
-            return publicHolidaysList;
-        }
+        public bool HappensOnWeekDay { get; set; } = false;        
     }
 }

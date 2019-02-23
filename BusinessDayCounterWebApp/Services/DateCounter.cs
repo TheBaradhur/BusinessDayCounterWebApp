@@ -1,3 +1,4 @@
+using BusinessDayCounterWebApp.Helpers;
 using BusinessDayCounterWebApp.Models;
 using System;
 using System.Collections.Generic;
@@ -7,10 +8,22 @@ namespace BusinessDayCounterWebApp.Services
 {
     public class DateCounter : IDateCounter
     {
+        private readonly IPublicHolidayCalculator _publicHolidayCalculator;
+
+        public DateCounter(IPublicHolidayCalculator publicHolidayCalculator)
+        {
+            _publicHolidayCalculator = publicHolidayCalculator;
+        }
+
         public int BusinessDaysBetweenTwoDatesCustomHolidays(DateTime firstDate, DateTime secondDate, IList<PublicHoliday> publicHolidays)
         {            
-            List<int> yearsToCompare = GetYearsBetweenDates(firstDate, secondDate);
-            var convertedHolidaysList = publicHolidays.SelectMany(x => x.GetDates(yearsToCompare)).ToList();
+            if (firstDate > secondDate)
+            {
+                return 0;
+            }
+
+            List<int> yearsToCompare = _publicHolidayCalculator.GetYearsBetweenDates(firstDate, secondDate);
+            var convertedHolidaysList = publicHolidays.SelectMany(x => _publicHolidayCalculator.GetPublicHolidayByYears(yearsToCompare, x)).ToList();
 
             return BusinessDaysBetweenTwoDates(firstDate, secondDate, convertedHolidaysList);
         }
@@ -71,20 +84,6 @@ namespace BusinessDayCounterWebApp.Services
             }
 
             return remaingDays;
-        }
-
-        private List<int> GetYearsBetweenDates(DateTime firstDate, DateTime secondDate)
-        {
-            var yearsList = new List<int>();
-            var iterator = new DateTime(firstDate.Year, firstDate.Month, firstDate.Day);
-
-            while (iterator.Year <= secondDate.Year)
-            {
-                yearsList.Add(iterator.Year);
-                iterator = iterator.AddYears(1);
-            }
-
-            return yearsList;
-        }
+        }        
     }
 }
