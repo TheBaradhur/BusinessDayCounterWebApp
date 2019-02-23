@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessDayCounterWebApp.Models;
+using System;
 using System.Collections.Generic;
 
 namespace BusinessDayCounterWebApp.Services
@@ -8,5 +9,7 @@ namespace BusinessDayCounterWebApp.Services
         int WeekdaysBetweenTwoDates(DateTime firstDate, DateTime secondDate);
 
         int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate, IList<DateTime> publicHolidays);
+
+        int BusinessDaysBetweenTwoDatesCustomHolidays(DateTime firstDate, DateTime secondDate, IList<PublicHoliday> publicHolidays);
     }
 }

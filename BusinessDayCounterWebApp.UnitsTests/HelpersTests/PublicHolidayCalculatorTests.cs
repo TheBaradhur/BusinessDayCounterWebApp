@@ -1,8 +1,6 @@
 ﻿using BusinessDayCounterWebApp.Helpers;
 using BusinessDayCounterWebApp.Models;
-using BusinessDayCounterWebApp.Services;
 using FluentAssertions;
-using NSubstitute;
 using System;
 using System.Collections.Generic;
 using Xunit;

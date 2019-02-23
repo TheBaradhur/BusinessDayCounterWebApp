@@ -14,8 +14,7 @@ namespace BusinessDayCounterWebApp.Controllers
         {
             _businessDayCounter = businessDayCounter;
         }
-
-        // GET api/values
+        
         [HttpGet]
         public ActionResult<int> WeekdaysBetweenTwoDates(DateTime firstDate, DateTime secondDate)
         {

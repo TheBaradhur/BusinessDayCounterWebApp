@@ -1,12 +1,13 @@
-﻿using BusinessDayCounterWebApp.Services;
+﻿using BusinessDayCounterWebApp.Models;
+using BusinessDayCounterWebApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
 namespace BusinessDayCounterWebApp.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/business-day-counter")]
     public class BusinessDayCounterController : ControllerBase
     {
         private readonly IDateCounter _businessDayCounter;
@@ -15,12 +16,17 @@ namespace BusinessDayCounterWebApp.Controllers
         {
             _businessDayCounter = businessDayCounter;
         }
-
-        // GET api/values
+        
         [HttpGet]
-        public ActionResult<int> GetBusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate, IList<DateTime> publicHoliday)
+        public ActionResult<int> GetBusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate, List<DateTime> publicHoliday)
         {
             return _businessDayCounter.BusinessDaysBetweenTwoDates(firstDate, secondDate, publicHoliday);
+        }
+        
+        [HttpGet("custom-holidays")]
+        public ActionResult<int> BusinessDaysBetweenTwoDatesCustomHolidays(DateTime firstDate, DateTime secondDate, List<PublicHoliday> publicHolidays)
+        {
+            return _businessDayCounter.BusinessDaysBetweenTwoDatesCustomHolidays(firstDate, secondDate, publicHolidays);
         }
     }
 }
