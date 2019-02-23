@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BusinessDayCounterWebApp.Services
 {
-    public interface IBusinessDayCounter
+    public interface IDateCounter
     {
         int WeekdaysBetweenTwoDates(DateTime firstDate, DateTime secondDate);
 

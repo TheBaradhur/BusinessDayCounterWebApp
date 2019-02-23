@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BusinessDayCounterWebApp.Services
 {
-    public class BusinessDayCounter : IBusinessDayCounter
+    public class DateCounter : IDateCounter
     {
         public int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate, IList<DateTime> publicHolidays)
         {
