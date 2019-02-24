@@ -3,6 +3,7 @@ using BusinessDayCounterWebApp.Models;
 using BusinessDayCounterWebApp.Services;
 using BusinessDayCounterWebApp.Services.PublicHolidayCalculators;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -38,10 +39,13 @@ namespace BusinessDayCounterWebApp.UnitsTests
 
         private readonly IDateHelper _dateHelper;
 
+        private readonly ILogger<DateCounter> _logger;
+
         public DateCounterTests()
         {
             _publicHolidayCalculatorFactory = Substitute.For<IPublicHolidayCalculatorFactory>();
             _dateHelper = Substitute.For<IDateHelper>();
+            _logger = Substitute.For<ILogger<DateCounter>>();
         }
 
         [Theory]
@@ -49,7 +53,7 @@ namespace BusinessDayCounterWebApp.UnitsTests
         public void WeekdaysBetweenTwoDates_WhenPasseValidDates_ThenReturnsCorrectCount(DateTime firstDate, DateTime secondDate, int expectedCounts)
         {
             // Arrange
-            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper);
+            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper, _logger);
 
             // Act
             var actual = target.WeekdaysBetweenTwoDates(firstDate, secondDate);
@@ -67,7 +71,7 @@ namespace BusinessDayCounterWebApp.UnitsTests
             int expectedCounts)
         {
             // Arrange
-            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper);
+            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper, _logger);
 
             // Act
             var actual = target.BusinessDaysBetweenTwoDates(firstDate, secondDate, holidaysList);
@@ -86,12 +90,12 @@ namespace BusinessDayCounterWebApp.UnitsTests
             var holidayList = new List<PublicHoliday> { anzacDayHoliday };
             var anzacDayDateIn2020 = new List<DateTime> { new DateTime(2020, 4, 27) };
             var year = new List<int> { 2020 };
-            var calculator = new FixedPublicHolidayCalculator();
+            var calculator = new FixedDayCalculator();
 
             _dateHelper.GetYearsBetweenDates(firstDate, secondDate).Returns(year);
             _publicHolidayCalculatorFactory.GetCalculator(anzacDayHoliday).Returns(calculator);
 
-            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper);
+            var target = new DateCounter(_publicHolidayCalculatorFactory, _dateHelper, _logger);
 
             // Act
             var actual = target.BusinessDaysBetweenTwoDates(firstDate, secondDate, holidayList);

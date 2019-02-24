@@ -1,6 +1,7 @@
 using BusinessDayCounterWebApp.Helpers;
 using BusinessDayCounterWebApp.Models;
 using BusinessDayCounterWebApp.Services.PublicHolidayCalculators;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -10,11 +11,13 @@ namespace BusinessDayCounterWebApp.Services
     {
         private readonly IPublicHolidayCalculatorFactory _publicHolidayCalculatorFactory;
         private readonly IDateHelper _dateHelper;
+        private readonly ILogger _logger;
 
-        public DateCounter(IPublicHolidayCalculatorFactory publicHolidayCalculatorFactory, IDateHelper dateHelper)
+        public DateCounter(IPublicHolidayCalculatorFactory publicHolidayCalculatorFactory, IDateHelper dateHelper, ILogger<DateCounter> logger)
         {
             _publicHolidayCalculatorFactory = publicHolidayCalculatorFactory;
             _dateHelper = dateHelper;
+            _logger = logger;
         }
 
         public int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate, IList<PublicHoliday> publicHolidays)
@@ -28,20 +31,20 @@ namespace BusinessDayCounterWebApp.Services
 
             IPublicHolidayCalculator calculator = null;
             var convertedHolidaysList = new List<DateTime>();
-            try
+           
+            foreach (var holiday in publicHolidays)
             {
-                foreach (var holiday in publicHolidays)
+                try
                 {
                     calculator = _publicHolidayCalculatorFactory.GetCalculator(holiday);
                     convertedHolidaysList.AddRange(calculator.GetPublicHolidayByYears(yearsToCompare, holiday));
                 }
+                catch (Exception e)
+                {
+                    _logger.LogError("An error occured when processing the custom holiday {0} with message {1}.", holiday.Name, e.Message);
+                }
             }
-            catch (Exception e)
-            {
-                // Add Logger
-                return -1;
-            }
-            
+
             return BusinessDaysBetweenTwoDates(firstDate, secondDate, convertedHolidaysList);
         }
 
