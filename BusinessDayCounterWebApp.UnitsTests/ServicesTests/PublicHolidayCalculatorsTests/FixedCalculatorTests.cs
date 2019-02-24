@@ -7,7 +7,7 @@ using Xunit;
 
 namespace BusinessDayCounterWebApp.UnitTests.ServicesTests.PublicHolidayCalculatorsTests
 {
-    public class FixedPublicHolidayCalculatorTests
+    public class FixedCalculatorTests
     {
         
         public static IEnumerable<object[]> PublicHolidaysListExpectations => new[]

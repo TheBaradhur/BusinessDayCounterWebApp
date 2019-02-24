@@ -28,8 +28,7 @@ namespace BusinessDayCounterWebApp.Services
                     calculator = new SpecificWeekDayCalculator();
                     break;
                 default:
-                    throw new NotImplementedException();
-                    break;
+                    throw new ArgumentException();
             }
 
             return calculator;
