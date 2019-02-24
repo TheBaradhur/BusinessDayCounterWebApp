@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BusinessDayCounterWebApp.Models
 {
@@ -20,6 +21,10 @@ namespace BusinessDayCounterWebApp.Models
         public bool MustHappenOnAWeekDay { get; set; } = false;
 
         // BasedOnAnotherHoliday
+        public string ReferenceHolidayName { get; set; }
+
+        public List<DateTime> ReferenceHolidayDates { get; set; }
+
         public int? NumberOfDaysFromReference { get; set; }
 
         // SpecificDayInWeek

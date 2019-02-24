@@ -29,7 +29,21 @@ namespace BusinessDayCounterWebApp.UnitTests.ServicesTests.PublicHolidayCalculat
                 new PublicHoliday { Name = "Anzac Day", Month = 4, Day = 25, MustHappenOnAWeekDay = true },
                 new List<DateTime> { new DateTime(2020, 4, 27) } },
         };
-        
+
+        [Fact]
+        public void GetPublicHolidayByYears_WhenNullName_ThenThrows()
+        {
+            // Arrange
+            var target = new FixedDayCalculator();
+            var holiday = new PublicHoliday { Name = null };
+
+            // Act
+            Action actual = () => target.GetPublicHolidayByYears(null, holiday);
+
+            // Assert
+            actual.Should().Throw<ArgumentException>().WithMessage("Cannot process a custom holidays without a name.");
+        }
+
         [Theory]
         [MemberData(nameof(PublicHolidaysListExpectations))]
         public void GetPublicHolidayByYears_WhenPassedYearsAndHOlidays_ThenReturnsExpectedDateList(List<int> years, PublicHoliday holiday, List<DateTime> expectedResult)

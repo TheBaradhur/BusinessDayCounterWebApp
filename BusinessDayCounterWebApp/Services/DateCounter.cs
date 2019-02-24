@@ -4,6 +4,7 @@ using BusinessDayCounterWebApp.Services.PublicHolidayCalculators;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BusinessDayCounterWebApp.Services
 {
@@ -29,23 +30,26 @@ namespace BusinessDayCounterWebApp.Services
 
             List<int> yearsToCompare = _dateHelper.GetYearsBetweenDates(firstDate, secondDate);
 
-            IPublicHolidayCalculator calculator = null;
-            var convertedHolidaysList = new List<DateTime>();
-           
-            foreach (var holiday in publicHolidays)
+            var valueHolidays = publicHolidays.Where(x => x.HolidayType != PublicHolidayType.BasedOnAnotherHoliday).ToList();
+            var referenceHolidays = publicHolidays.Where(x => x.HolidayType == PublicHolidayType.BasedOnAnotherHoliday).ToList();
+
+            var convertedHolidaysDictionnary = new Dictionary<string, List<DateTime>>();
+            ProcessCustomHolidays(yearsToCompare, valueHolidays, convertedHolidaysDictionnary);
+
+            foreach (var referenceHoliday in referenceHolidays)
             {
-                try
+                if (convertedHolidaysDictionnary.TryGetValue(referenceHoliday.ReferenceHolidayName, out var referencedHoliday))
                 {
-                    calculator = _publicHolidayCalculatorFactory.GetCalculator(holiday);
-                    convertedHolidaysList.AddRange(calculator.GetPublicHolidayByYears(yearsToCompare, holiday));
+                    referenceHoliday.ReferenceHolidayDates = referencedHoliday;
+                    ProcessCustomHolidays(yearsToCompare, new List<PublicHoliday> { referenceHoliday }, convertedHolidaysDictionnary);
                 }
-                catch (Exception e)
+                else
                 {
-                    _logger.LogError("An error occured when processing the custom holiday {0} with message {1}.", holiday.Name, e.Message);
+                    _logger.LogWarning("The referenced holiday doesn't exist, can't calculate {1}.", referenceHoliday.Name);
                 }
             }
-
-            return BusinessDaysBetweenTwoDates(firstDate, secondDate, convertedHolidaysList);
+                        
+            return BusinessDaysBetweenTwoDates(firstDate, secondDate, convertedHolidaysDictionnary.SelectMany(x => x.Value).ToList());
         }
 
         public int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate, IList<DateTime> publicHolidays)
@@ -104,6 +108,26 @@ namespace BusinessDayCounterWebApp.Services
             }
 
             return remaingDays;
-        }        
+        }
+
+        private void ProcessCustomHolidays(List<int> yearsToCompare, List<PublicHoliday> publicHolidays, Dictionary<string, List<DateTime>> convertedHolidaysDictionnary)
+        {
+            IPublicHolidayCalculator calculator = null;
+            foreach (var holiday in publicHolidays)
+            {
+                try
+                {
+                    calculator = _publicHolidayCalculatorFactory.GetCalculator(holiday);
+
+                    var computedDates = calculator.GetPublicHolidayByYears(yearsToCompare, holiday);
+
+                    convertedHolidaysDictionnary.Add(holiday.Name, computedDates);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("An error occured when processing the custom holiday {0} with message {1}.", holiday.Name, e.Message);
+                }
+            }
+        }
     }
 }

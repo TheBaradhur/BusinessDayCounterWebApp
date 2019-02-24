@@ -8,6 +8,11 @@ namespace BusinessDayCounterWebApp.Services.PublicHolidayCalculators
     {
         public List<DateTime> GetPublicHolidayByYears(List<int> years, PublicHoliday holiday)
         {
+            if (string.IsNullOrEmpty(holiday.Name))
+            {
+                throw new ArgumentException("Cannot process a custom holidays without a name.");
+            }
+
             var publicHolidaysList = new List<DateTime>();
             if (years == null)
             {
