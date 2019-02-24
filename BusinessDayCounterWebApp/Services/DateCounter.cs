@@ -34,6 +34,7 @@ namespace BusinessDayCounterWebApp.Services
             var referenceHolidays = publicHolidays.Where(x => x.HolidayType == PublicHolidayType.BasedOnAnotherHoliday).ToList();
 
             var convertedHolidaysDictionnary = new Dictionary<string, List<DateTime>>();
+
             ProcessCustomHolidays(yearsToCompare, valueHolidays, convertedHolidaysDictionnary);
 
             foreach (var referenceHoliday in referenceHolidays)
@@ -120,7 +121,7 @@ namespace BusinessDayCounterWebApp.Services
                     calculator = _publicHolidayCalculatorFactory.GetCalculator(holiday);
 
                     var computedDates = calculator.GetPublicHolidayByYears(yearsToCompare, holiday);
-
+                    
                     convertedHolidaysDictionnary.Add(holiday.Name, computedDates);
                 }
                 catch (Exception e)

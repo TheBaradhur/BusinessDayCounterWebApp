@@ -1,5 +1,4 @@
 ﻿using BusinessDayCounterWebApp.Helpers;
-using BusinessDayCounterWebApp.Models;
 using BusinessDayCounterWebApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

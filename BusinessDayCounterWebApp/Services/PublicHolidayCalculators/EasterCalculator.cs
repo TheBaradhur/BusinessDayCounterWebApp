@@ -11,9 +11,13 @@ namespace BusinessDayCounterWebApp.Services.PublicHolidayCalculators
             if (string.IsNullOrEmpty(holiday.Name))
             {
                 throw new ArgumentException("Cannot process a custom holidays without a name.");
-            }
+            }           
 
             var easterHolidays = new List<DateTime>();
+            if (years == null)
+            {
+                return easterHolidays;
+            }
 
             foreach (var year in years)
             {

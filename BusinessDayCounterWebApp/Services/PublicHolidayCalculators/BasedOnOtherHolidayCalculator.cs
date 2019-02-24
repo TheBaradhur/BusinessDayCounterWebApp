@@ -1,5 +1,4 @@
 ﻿using BusinessDayCounterWebApp.Models;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +25,11 @@ namespace BusinessDayCounterWebApp.Services.PublicHolidayCalculators
             }
 
             var holidayDatesList = new List<DateTime>();
+            if (years == null)
+            {
+                return holidayDatesList;
+            }
+
             foreach (var referenceDate in holiday.ReferenceHolidayDates)
             {
                 if (years.Any(x => x == referenceDate.Year))
