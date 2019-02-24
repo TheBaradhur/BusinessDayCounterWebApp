@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace BusinessDayCounterWebApp.Services.PublicHolidayCalculators
 {
-    public class FixedPublicHolidayCalculator : IPublicHolidayCalculator
+    public class FixedDayCalculator : IPublicHolidayCalculator
     {
         public List<DateTime> GetPublicHolidayByYears(List<int> years, PublicHoliday holiday)
         {

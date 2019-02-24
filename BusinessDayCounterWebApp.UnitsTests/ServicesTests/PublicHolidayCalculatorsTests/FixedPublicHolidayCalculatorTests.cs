@@ -35,7 +35,7 @@ namespace BusinessDayCounterWebApp.UnitTests.ServicesTests.PublicHolidayCalculat
         public void GetPublicHolidayByYears_WhenPassedYearsAndHOlidays_ThenReturnsExpectedDateList(List<int> years, PublicHoliday holiday, List<DateTime> expectedResult)
         {
             // Arrange
-            var target = new FixedPublicHolidayCalculator();
+            var target = new FixedDayCalculator();
 
             // Act
             var actual = target.GetPublicHolidayByYears(years, holiday);

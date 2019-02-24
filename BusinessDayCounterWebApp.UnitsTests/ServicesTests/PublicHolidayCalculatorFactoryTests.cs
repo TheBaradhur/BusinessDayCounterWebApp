@@ -12,7 +12,11 @@ namespace BusinessDayCounterWebApp.UnitTests.ServicesTests
     {
         public static IEnumerable<object[]> PublicHolidaysTypeList => new[]
         {
-            new object[] { new PublicHoliday { HolidayType = PublicHolidayType.FixedDate }, typeof(FixedPublicHolidayCalculator) },
+            new object[] { new PublicHoliday { HolidayType = PublicHolidayType.FixedDate }, typeof(FixedDayCalculator) },
+            new object[] { new PublicHoliday { HolidayType = PublicHolidayType.BasedOnAnotherHoliday }, typeof(BasedOnOtherHolidayCalculator) },
+            new object[] { new PublicHoliday { HolidayType = PublicHolidayType.Easter }, typeof(EasterCalculator) },
+            new object[] { new PublicHoliday { HolidayType = PublicHolidayType.SpecificDayInWeek }, typeof(SpecificWeekDayCalculator) },
+            new object[] { new PublicHoliday { HolidayType = PublicHolidayType.RepeatEveryXYear }, typeof(YearRepetitionCalculator) },
         };
 
         [Theory]
